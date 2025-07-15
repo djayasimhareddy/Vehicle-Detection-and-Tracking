@@ -1,16 +1,23 @@
-from vehicle_detector import VehicleDetectionSystem
-from ui import create_gui_menu
+# main.py
+from detection_system import VehicleDetectionSystem
+from gui import create_gui_menu, console_menu
 
 def main():
-    det = VehicleDetectionSystem()
-    choice, path = create_gui_menu()
-    if choice == "webcam":
-        det.webcam_detection()
-    elif choice == "video":
-        det.video_detection(path)
-    elif choice == "image":
-        det.image_detection(path)
-    print("✅ Session Complete.")
+    system = VehicleDetectionSystem()
+    try:
+        mode, path = create_gui_menu()
+    except:
+        mode, path = console_menu()
+
+    if mode == 'webcam':
+        system.detect_webcam()
+    elif mode == 'video':
+        system.detect_video(path)
+    elif mode == 'image':
+        system.detect_image(path)
+    else:
+        print("Goodbye.")
 
 if __name__ == "__main__":
     main()
+
