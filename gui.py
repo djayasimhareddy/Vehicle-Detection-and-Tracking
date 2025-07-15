@@ -19,7 +19,7 @@ def create_gui_menu():
         p = filedialog.askopenfilename(
             title="Select Video File",
             initialdir=initial if os.path.exists(initial) else None,
-            filetypes=[("Video","*.mp4 *.avi *.mov *.mkv"),("All","*.*")]
+            filetypes=[("Video","*.mp4 *.avi *.mov *.mkv *.webm"),("All","*.*")]
         )
         if p:
             root.choice, root.path = 'video', p
