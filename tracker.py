@@ -5,10 +5,10 @@ from collections import deque
 class CentroidTracker:
     def __init__(self, max_disappeared=50):
         self.next_id = 0
-        self.objects = {}       # object_id -> (x, y, class_id)
-        self.disappeared = {}   # object_id -> frames disappeared
+        self.objects = {}       # object_id -> (centroid, class_id)
+        self.disappeared = {}   # object_id -> disappeared count
+        self.history = {}       # object_id -> deque of recent centroids
         self.max_disappeared = max_disappeared
-        self.history = {}       # object_id -> deque of centroids
 
     def register(self, centroid, class_id):
         oid = self.next_id
@@ -23,7 +23,7 @@ class CentroidTracker:
         del self.history[oid]
 
     def update(self, rects, class_ids):
-        # if no detections, mark disappeared
+        # No detections
         if not rects:
             for oid in list(self.disappeared):
                 self.disappeared[oid] += 1
@@ -31,19 +31,24 @@ class CentroidTracker:
                     self.deregister(oid)
             return self.objects
 
-        # compute centroids
-        input_centroids = np.array([[(x1+x2)//2, (y1+y2)//2] for (x1,y1,x2,y2) in rects])
+        # Compute centroids
+        input_centroids = np.array([
+            [(x1 + x2) // 2, (y1 + y2) // 2]
+            for (x1, y1, x2, y2) in rects
+        ])
 
-        # register all if none exist
+        # Register new if no existing
         if not self.objects:
             for i, centroid in enumerate(input_centroids):
                 self.register(centroid, class_ids[i])
             return self.objects
 
-        # match existing to inputs
+        # Match existing to new
         object_ids = list(self.objects.keys())
         object_centroids = [self.objects[oid][0] for oid in object_ids]
-        D = np.linalg.norm(np.array(object_centroids)[:,None] - input_centroids, axis=2)
+        D = np.linalg.norm(
+            np.array(object_centroids)[:, None] - input_centroids, axis=2
+        )
         rows = D.min(axis=1).argsort()
         cols = D.argmin(axis=1)[rows]
 
@@ -54,9 +59,10 @@ class CentroidTracker:
             oid = object_ids[r]
             self.objects[oid] = (input_centroids[c], class_ids[c])
             self.disappeared[oid] = 0
-            used_rows.add(r); used_cols.add(c)
+            used_rows.add(r)
+            used_cols.add(c)
 
-        # handle disappeared or new
+        # Handle disappeared or new
         unused_rows = set(range(D.shape[0])) - used_rows
         unused_cols = set(range(D.shape[1])) - used_cols
         if D.shape[0] >= D.shape[1]:
@@ -70,3 +76,4 @@ class CentroidTracker:
                 self.register(input_centroids[c], class_ids[c])
 
         return self.objects
+
