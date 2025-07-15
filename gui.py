@@ -15,7 +15,7 @@ def create_gui_menu():
     def choose_video():
         p = filedialog.askopenfilename(
             title="Select Video File",
-            filetypes=[("Video","*.mp4 *.avi *.mov *.mkv"),("All","*.*")]
+            filetypes=[("Video","*.mp4 *.avi *.mov *.mkv *.webm"),("All","*.*")]
         )
         if p: root.choice, root.path = 'video', p; root.quit()
     def choose_image():
