@@ -1,12 +1,6 @@
-train: C:/Users/devir/MyProject/vechile detection/main_dataset/train/images
-val: C:/Users/devir/MyProject/vechile detection/main_dataset/valid/images
+train: ..../train/images
+val: ...../valid/images
 
 nc: 7
 names: ['ambulance', 'auto', 'bicycle', 'bus', 'car', 'motorbike', 'truck']
 
-roboflow:
-  workspace: djr-oeuxn
-  project: traffic-detection-1-i7yjn
-  version: 2
-  license: CC BY 4.0
-  url: https://universe.roboflow.com/djr-oeuxn/traffic-detection-1-i7yjn/dataset/2
